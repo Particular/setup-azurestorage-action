@@ -21,7 +21,7 @@ $storageKeyDetails = az storage account keys list --account-name $storageName --
 $storageKey = $storageKeyDetails[0].value
 echo "::add-mask::$storageKey"
 
-$storageConnectString = "DefaultEndpointsProtocol=https;AccountName=$storageName;AccountKey=$storageKey"
+$storageConnectString = "DefaultEndpointsProtocol=https;AccountName=$storageName;AccountKey=$storageKey;EndpointSuffix=core.windows.net"
 
 echo "Tagging storage account"
 $ignore = az tag create --resource-id $storageDetails.id --tags $packageTag $runnerOsTag $dateTag
