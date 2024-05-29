@@ -21,7 +21,13 @@ $storageKeyDetails = az storage account keys list --account-name $storageName --
 $storageKey = $storageKeyDetails[0].value
 echo "::add-mask::$storageKey"
 
-$storageConnectString = "DefaultEndpointsProtocol=https;AccountName=$storageName;AccountKey=$storageKey"
+$blobEndpoint = $storageDetails.primaryEndpoints.blob
+$uri = [System.Uri]$blobEndpoint
+$uriHost = $uri.Host
+$endpointSuffix = $uriHost.Substring($uriHost.IndexOf('.') + 1)
+$endpointSuffix = $endpointSuffix.Substring($endpointSuffix.IndexOf('.') + 1)
+
+$storageConnectString = "DefaultEndpointsProtocol=https;AccountName=$storageName;AccountKey=$storageKey;EndpointSuffix=$endpointSuffix"
 
 echo "Tagging storage account"
 $ignore = az tag create --resource-id $storageDetails.id --tags $packageTag $runnerOsTag $dateTag
