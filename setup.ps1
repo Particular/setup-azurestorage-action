@@ -1,9 +1,11 @@
 param (
     [string]$storageName,
     [string]$connectionStringName,
-    [string]$tagName
+    [string]$tagName,
+    [string]$azureCredentials
 )
 
+$credentials = $azureCredentials | ConvertFrom-Json
 echo "Getting the Azure region in which this workflow is running..."
   $hostInfo = curl --silent -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2021-02-01" | ConvertFrom-Json
 $region = $hostInfo.compute.location
@@ -16,6 +18,11 @@ $dateTag = "Created=$(Get-Date -Format "yyyy-MM-dd")"
 echo "Creating storage account (This can take a while.)"
 $storageDetails = az storage account create --name $storageName --location $region --resource-group GitHubActions-RG --sku Standard_LRS | ConvertFrom-Json
 
+Write-Output "Assigning roles to Storage Account $storageName"
+az role assignment create --assignee $credentials.principalId --role "Storage Account Contributor" --scope $storageDetails.id
+az role assignment create --assignee $credentials.principalId --role "Storage Table Data Contributor" --scope $storageDetails
+az role assignment create --assignee $credentials.principalId --role "Storage Queue Data Contributor" --scope $storageDetails
+az role assignment create --assignee $credentials.principalId --role "Storage Blob Data Contributor" --scope $storageDetails
 echo "Getting storage account keys"
 $storageKeyDetails = az storage account keys list --account-name $storageName --resource-group GitHubActions-RG | ConvertFrom-Json
 $storageKey = $storageKeyDetails[0].value

@@ -32,6 +32,7 @@ jobs:
         uses: ./
         with:
           connection-string-name: StorageConnectionString
+          azure-credentials: ${{ secrets.AZURE_ACI_CREDENTIALS }}
           tag: setup-azurestorage-action
       - name: Validate
         shell: pwsh
