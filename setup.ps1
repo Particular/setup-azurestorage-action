@@ -28,10 +28,10 @@ Write-Output "Creating storage account (This can take a while.)"
 $storageDetails = az storage account create --name $storageName --location $region --resource-group $resourceGroup --sku Standard_LRS | ConvertFrom-Json
 
 Write-Output "Assigning roles to Storage Account $storageName"
-az role assignment create --assignee $credentials.principalId --role "Storage Account Contributor" --scope $storageDetails.id
-az role assignment create --assignee $credentials.principalId --role "Storage Table Data Contributor" --scope $storageDetails
-az role assignment create --assignee $credentials.principalId --role "Storage Queue Data Contributor" --scope $storageDetails
-az role assignment create --assignee $credentials.principalId --role "Storage Blob Data Contributor" --scope $storageDetails
+az role assignment create --assignee $credentials.principalId --role "Storage Account Contributor" --scope $storageDetails.id  > $null
+az role assignment create --assignee $credentials.principalId --role "Storage Table Data Contributor" --scope $storageDetails.id  > $null
+az role assignment create --assignee $credentials.principalId --role "Storage Queue Data Contributor" --scope $storageDetails.id  > $null
+az role assignment create --assignee $credentials.principalId --role "Storage Blob Data Contributor" --scope $storageDetails.id  > $null
 
 Write-Output "Getting storage account keys"
 $storageKeyDetails = az storage account keys list --account-name $storageName --resource-group $resourceGroup | ConvertFrom-Json
